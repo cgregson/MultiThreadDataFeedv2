@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading;
 using Microsoft.Office.Interop.Excel;
@@ -26,9 +30,43 @@ namespace MultiThreadDataFeedv2
         }
         private void ExportDataTest()
         {
-            var app = new Application();
-            app.Visible = true;
-            app.Run(@"'Y:\CityRealEstate\Acquisitions\Form Underwriting Model\VBA\LTDX - Copy.xlam'!RefreshData", Globals.ThisAddIn.Application.ActiveWorkbook);
+            Globals.ThisAddIn.Application.ActiveWorkbook.SaveCopyAs(@"C:\Users\" + Environment.UserName + @"\AppData\Local" + Globals.ThisAddIn.Application.ActiveWorkbook.Name); //save to temp folder
+            var app = new Application
+            {
+                Visible = true
+            };
+            var wb = app.Workbooks.Open(@"C:\Development\" + Globals.ThisAddIn.Application.ActiveWorkbook.Name);
+            try
+            {
+                app.Run(@"'Y:\CityRealEstate\Acquisitions\Form Underwriting Model\VBA\LTDX.xlam'!RefreshData", wb);                
+            }
+            catch
+            {
+                using (SpeechSynthesizer synth = new SpeechSynthesizer()) //not managed by garbage collection, need using statement to dispose object
+                {
+                    synth.Speak(WindowsDisplayName() + ", thank you. Your data export failed.");
+                };
+            }
+            finally
+            {
+                using (SpeechSynthesizer synth = new SpeechSynthesizer()) //not managed by garbage collection, need using statement to dispose object
+                {
+                    synth.Speak(WindowsDisplayName() + ", thank you. Your data has been assimilated.");
+                };
+                wb.Close(false);
+                File.Delete(wb.FullName);
+                app.Quit();
+            }
+        }
+        private string WindowsDisplayName()
+        {
+            Thread.GetDomain().SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+            WindowsPrincipal principal = (WindowsPrincipal)Thread.CurrentPrincipal;
+            using (PrincipalContext pc = new PrincipalContext(ContextType.Domain))
+            {
+                UserPrincipal up = UserPrincipal.FindByIdentity(pc, principal.Identity.Name);
+                return up.DisplayName;
+            }
         }
     }
 }
