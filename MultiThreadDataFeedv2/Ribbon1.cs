@@ -36,25 +36,26 @@ namespace MultiThreadDataFeedv2
                 Visible = true
             };
             var wb = app.Workbooks.Open(@"C:\Development\" + Globals.ThisAddIn.Application.ActiveWorkbook.Name);
+            var wbFullName = wb.FullName;
             try
             {
-                app.Run(@"'Y:\CityRealEstate\Acquisitions\Form Underwriting Model\VBA\LTDX.xlam'!RefreshData", wb);                
+                app.Run(@"'Y:\CityRealEstate\Acquisitions\Form Underwriting Model\VBA\LTDX.xlam'!RefreshData", wb);
+                using (SpeechSynthesizer synth = new SpeechSynthesizer()) //not managed by garbage collection, need using statement to dispose object
+                {
+                    synth.Speak(WindowsDisplayName() + ", thank you. Your data has been assimilated.");
+                };
             }
             catch
             {
                 using (SpeechSynthesizer synth = new SpeechSynthesizer()) //not managed by garbage collection, need using statement to dispose object
                 {
-                    synth.Speak(WindowsDisplayName() + ", thank you. Your data export failed.");
+                    synth.Speak(WindowsDisplayName() + ", your data export failed.");
                 };
             }
             finally
             {
-                using (SpeechSynthesizer synth = new SpeechSynthesizer()) //not managed by garbage collection, need using statement to dispose object
-                {
-                    synth.Speak(WindowsDisplayName() + ", thank you. Your data has been assimilated.");
-                };
                 wb.Close(false);
-                File.Delete(wb.FullName);
+                File.Delete(wbFullName);
                 app.Quit();
             }
         }
