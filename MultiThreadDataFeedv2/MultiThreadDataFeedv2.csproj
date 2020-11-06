@@ -158,8 +158,6 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="DataFeed.cs" />
-    <Compile Include="IDataFeed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

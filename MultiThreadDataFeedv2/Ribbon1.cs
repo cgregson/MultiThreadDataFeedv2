@@ -30,12 +30,12 @@ namespace MultiThreadDataFeedv2
         }
         private void ExportDataTest()
         {
-            Globals.ThisAddIn.Application.ActiveWorkbook.SaveCopyAs(@"C:\Users\" + Environment.UserName + @"\AppData\Local" + Globals.ThisAddIn.Application.ActiveWorkbook.Name); //save to temp folder
+            Globals.ThisAddIn.Application.ActiveWorkbook.SaveCopyAs(@"C:\Users\" + Environment.UserName + @"\AppData\Local\" + Globals.ThisAddIn.Application.ActiveWorkbook.Name); //save to temp folder
             var app = new Application
             {
                 Visible = true
             };
-            var wb = app.Workbooks.Open(@"C:\Development\" + Globals.ThisAddIn.Application.ActiveWorkbook.Name);
+            var wb = app.Workbooks.Open(@"C:\Users\" + Environment.UserName + @"\AppData\Local\" + Globals.ThisAddIn.Application.ActiveWorkbook.Name);
             var wbFullName = wb.FullName;
             try
             {

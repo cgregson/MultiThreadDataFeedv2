@@ -12,16 +12,6 @@ namespace MultiThreadDataFeedv2
 {
     public partial class ThisAddIn
     {
-        private DataFeed dataFeed;
-        public string dataFeedFileName { get; private set; }
-        protected override object RequestComAddInAutomationService()
-        {
-            if (dataFeed == null)
-            {
-                dataFeed = new DataFeed();
-            }
-            return dataFeed;
-        }
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
         }
